@@ -319,14 +319,22 @@
     }
   };
 
-  // Whitelisted domains and individual emails
-  const ALLOWED_DOMAINS = [
-    'matacompany.com'
-  ];
-  const ALLOWED_EMAILS = [
-    // Add individual emails here if needed:
-    // 'partner@otherdomain.com'
-  ];
+  // Whitelist is loaded from whitelist.json (edit that file to manage access)
+  let ALLOWED_DOMAINS = [];
+  let ALLOWED_EMAILS = [];
+
+  async function loadWhitelist() {
+    try {
+      const resp = await fetch('/whitelist.json?_=' + Date.now());
+      const data = await resp.json();
+      ALLOWED_DOMAINS = (data.allowed_domains || []).map(d => d.toLowerCase());
+      ALLOWED_EMAILS = (data.allowed_emails || []).map(e => e.toLowerCase());
+    } catch (e) {
+      console.error('Failed to load whitelist:', e);
+      // Fallback to hardcoded domain if fetch fails
+      ALLOWED_DOMAINS = ['matacompany.com'];
+    }
+  }
 
   // ═══════════════════════════════════════════════════════════════
   // AUTH
@@ -337,9 +345,9 @@
   function isEmailAllowed(email) {
     if (!email) return false;
     const lower = email.toLowerCase();
-    if (ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(lower)) return true;
+    if (ALLOWED_EMAILS.includes(lower)) return true;
     const domain = lower.split('@')[1];
-    return ALLOWED_DOMAINS.map(d => d.toLowerCase()).includes(domain);
+    return ALLOWED_DOMAINS.includes(domain);
   }
 
   function showError(msg) {
@@ -357,6 +365,7 @@
 
   async function signIn() {
     try {
+      if (ALLOWED_DOMAINS.length === 0) await loadWhitelist();
       const response = await msalInstance.loginPopup({
         scopes: ['openid', 'profile', 'email', 'User.Read']
       });
@@ -383,6 +392,7 @@
   }
 
   async function checkExistingSession() {
+    await loadWhitelist();
     await msalInstance.initialize();
     try { await msalInstance.handleRedirectPromise(); } catch(e) {}
     const accounts = msalInstance.getAllAccounts();

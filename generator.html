@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MATA Waitlist — QR Code Generator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" integrity="sha384-9EgCIw3e2fCA/bpBMGwKnjoMRqNRPjIB/DWPTlyG1U7+xNPP7nfDkk3MHbW/aRHl" crossorigin="anonymous"></script>
+<script>
+  // Fallback: if MSAL didn't load from primary CDN, try alternate
+  if (typeof msal === 'undefined') {
+    document.write('<scr' + 'ipt src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"><\/scr' + 'ipt>');
+  }
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }

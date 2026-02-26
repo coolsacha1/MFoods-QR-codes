@@ -1,6 +1,7 @@
 {
   "allowed_domains": [
-    "matacompany.com"
+    "matacompany.com",
+    "partner.superapp-mtz.com"
   ],
   "allowed_emails": [
   ]
